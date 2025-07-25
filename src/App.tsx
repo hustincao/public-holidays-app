@@ -1,8 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { Country } from "./types";
+import type { Country } from "./types";
+import { useState } from "react";
+import CountryHolidays from "./CountryHolidays";
+
+const languageIsoCode = "EN";
 
 function App() {
+  const [country, setCountry] = useState("");
+
   const {
     isPending: isFetchingCountries,
     isError: isCountriesError,
@@ -12,7 +18,7 @@ function App() {
     queryKey: ["countries"],
     queryFn: async () => {
       const params = {
-        languageIsoCode: "en",
+        languageIsoCode: languageIsoCode,
       };
       const queryString = new URLSearchParams(params).toString();
       const response = await fetch(
@@ -29,12 +35,19 @@ function App() {
 
   return (
     <div className="form-group">
-      <label>Select</label>
-      <select id="paperSelects1">
+      <select
+        id="paperSelects1"
+        value={country}
+        onChange={(e) => setCountry(e.target.value)}
+      >
+        <option value="">Select a Country</option>
         {countries.map((country: Country) => (
-          <option value={country.isoCode}>{country.name[0].text}</option>
+          <option key={country.isoCode} value={country.isoCode}>
+            {country.name[0].text}
+          </option>
         ))}
       </select>
+      <CountryHolidays country={country} languageIsoCode={languageIsoCode} />
     </div>
   );
 }
